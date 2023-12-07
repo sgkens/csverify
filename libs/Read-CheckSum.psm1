@@ -3,10 +3,19 @@ Function Read-CheckSum {
     [cmdletbinding()]
     [OutputType([pscustomobject])]
     param(
-        [Parameter(Mandatory=$true)]
-        $FilePath
+        [Parameter(Mandatory=$false)]
+        [string]$Path,
+        [Parameter(Mandatory=$false)]
+        [string]$FromString
     )
-    $verification = (Get-Content -Path "$FilePath\VERIFICATION.txt" -Raw)
+    if ($path -eq '.\') { $path = "$((Get-Location).Path)\tools" }
+
+    if($FromString){
+        $verification = $FromString 
+    }else{
+        $verification = (Get-Content -Path "$Path\VERIFICATION.txt" -Raw)
+    }
+
     $checksumObject = @()
     foreach ($line in ($verification -split "___________________")[1] -split "`n") {
         if($line.length -ne 0){
@@ -18,9 +27,7 @@ Function Read-CheckSum {
         }
 
     }
-    # foreach($sum in $indivSums){
-    #     write-host $suma
-    # }
+
     return $checksumObject
 }
 Export-ModuleMember -Function Read-CheckSum

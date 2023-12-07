@@ -14,16 +14,20 @@ Function New-CheckSum (){
 
     $VerificationText = @'
 VERIFICATION
-Verification is intended to assist the Chocolatey moderators and community
+Verification is intended to assist the moderators and community
 in verifying that this package's contents are trustworthy.
 
 To Verify the files in this package, please download/Install module csverify from chocalatey.org or from the powershell gallery.
-Get-CheckSum -Path $Path
+Install-Module -Name csverify
+Import-Module -Name csverify
+
+Then run the following command:
+Test-Verification
 
 -[checksum hash]-
 ___________________
 '@
-    if ($path -eq '.\') { $path = (Get-Location).Path }
+    if ($path -eq '.\') { $path = (Get-Location).Path }else { $path = Resolve-Path -Path $path }
 
     # Get all files in the module folder recursively
     $files = Get-ChildItem -Path $path -Recurse -Exclude "VERIFICATION.txt",".git" | 
