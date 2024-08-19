@@ -4,7 +4,7 @@
 $moduleName  = "csverify"
 # Include
 $Files       = "csverify.psm1", "csverify.psd1", "LICENSE", "icon.png", "readme.md"
-$folders     = "libs"
+$folders     = "libs","tools"
 $exclude     = "Issue#1.txt"
 
 #---CONFIG----------------------------

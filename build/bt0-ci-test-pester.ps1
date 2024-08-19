@@ -8,7 +8,7 @@ $pesterConfig = New-PesterConfiguration -hashtable @{
     OutputFormat          = 'JaCoCo'
     OutputPath            = 'coverage.xml'
     OutputEncoding        = 'utf8'
-    CoveragePercentTarget = 85
+    CoveragePercentTarget = 100
     path                  = ".\libs\*.psm1",".\*.psm1"
   }
   Run = @{
