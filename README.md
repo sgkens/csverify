@@ -1,4 +1,4 @@
-# <img width="25" src="https://raw.githubusercontent.com/sgkens/resources/main/modules/csverify/dist/v1/csverify-icon-x128.png"/> **CSVERIFY PowerShell Module**
+# <img width="25" src="https://raw.githubusercontent.com/sgkens/resources/main/modules/csverify/dist/v1/csverify-icon-x128.png"/> **CSVERIFY** *PowerShell Module*
 
 [TOC]
 
@@ -142,3 +142,7 @@ New-VerificationFile
 
 #### Test-Verification
 Test-Verification is used to verify the integrity of the codebase base it compares the `SHA256` values from **VERIFICATION.txt** file and Returns file report.
+
+```powershell 
+Test-Verification
+```
