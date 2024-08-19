@@ -7,9 +7,7 @@ Function New-CheckSum (){
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory=$True,Position=1)]
-        [String]$Path,
-        [Parameter(Mandatory=$false)]
-        [String]$Outpath
+        [String]$Path
     )
 
     $VerificationText = @'
@@ -27,7 +25,7 @@ Test-Verification
 -[checksum hash]-
 ___________________
 '@
-    if ($path -eq '.\') { $path = (Get-Location).Path }else { $path = Resolve-Path -Path $path }
+    [console]::write("  └─ Generating New Checksums: o--($(Get-ColorTune -Text "$Path\*" -color Magenta)`n")
 
     # Get all files in the module folder recursively
     $files = Get-ChildItem -Path $path -Recurse -Exclude "VERIFICATION.txt",".git" | 
@@ -45,6 +43,8 @@ ___________________
         $hash = Get-FileHash -Path $_.FullName -Algorithm SHA256 | Select-Object -ExpandProperty Hash
         $hashes += "$size | $($hash.ToString()) | .\$relativePath `n"  
     }
+    
+    [console]::write("  └─ $(Get-ColorTune -Text Done. -color green)`n")
     return $hashes.TrimEnd("`n`n")
 
 }
