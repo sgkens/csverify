@@ -3,17 +3,27 @@ Function Read-CheckSum {
     [cmdletbinding()]
     [OutputType([pscustomobject])]
     param(
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [string]$Path,
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory = $false)]
         [string]$FromString
     )
-    if ($path -eq '.\') { $path = "$((Get-Location).Path)\tools" }
 
-    if($FromString){
-        $verification = $FromString 
-    }else{
-        $verification = (Get-Content -Path "$Path\VERIFICATION.txt" -Raw)
+    try {
+        if ($FromString) {
+            $verification = $FromString 
+            [console]::write("  └─ Reading Checksums from String: o--($(Get-ColorTune -Text "$Path\VERIFICATION.txt" -color Magenta)`n")
+            [console]::write("  └─ $(Get-ColorTune -Text Done. -color green)`n")
+        }
+        else {
+            [console]::write("  └─ Reading Checksums from file: o--($(Get-ColorTune -Text "$Path\VERIFICATION.txt" -color Magenta)`n")
+            $verification = (Get-Content -Path "$Path\tools\VERIFICATION.txt" -Raw)
+            [console]::write("  └─ $(Get-ColorTune -Text Done. -color green)`n")
+        }
+    }
+    catch {
+        [console]::write("$(Get-ColorTune -Text "[Read-CheckSum]=> Path not found:" -color red) $($path)`n")
+        return
     }
 
     $checksumObject = @()
@@ -27,7 +37,6 @@ Function Read-CheckSum {
         }
 
     }
-
     return $checksumObject
 }
 Export-ModuleMember -Function Read-CheckSum

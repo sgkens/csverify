@@ -9,10 +9,10 @@
 @{
 
 # Script module or binary module file associated with this manifest.
-RootModule = 'csverify.psm1'
+RootModule = "csverify.psm1"
 
 # Version number of this module.
-ModuleVersion = '0.1.0.0'
+ModuleVersion     = '0.2.0.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -69,7 +69,7 @@ PowerShellVersion = '7.0'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'New-CheckSum','Read-CheckSum','New-Verification'
+FunctionsToExport = 'New-CheckSum','Read-CheckSum','New-VerificationFile','Test-Verification'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = ''
@@ -101,13 +101,13 @@ PrivateData = @{
         LicenseUri = 'https://choosealicense.com/licenses/mit'
 
         # A URL to the main website for this project.
-        ProjectUri = 'https://gitlab.lab.davilion.online/powershell/csverify.git'
+        ProjectUri = 'https://github.com/sgkens/csverify.git'
 
         # A URL to an icon representing this module.
-        IconUri = 'https://gitlab.lab.davilion.online/powershell/csverify/-/blob/main/logo.svg'
+        IconUri  = 'https://raw.githubusercontent.com/sgkens/resources/main/modules/csverify/dist/v1/csverify-icon-x128.png'
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'https://gitlab.lab.davilion.online/powershell/csverify/-/blob/main/Releases.md'
+        ReleaseNotes = 'https://github.com/sgkens/csverify/-/blob/main/Releases.md'
 
         # Prerelease string of this module
         #Prerelease = 'alpha1'
