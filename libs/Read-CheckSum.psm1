@@ -1,4 +1,5 @@
-using module colortune\Get-ColorTune.psm1
+using module modules\colortune\Get-ColorTune.psm1
+
 Function Read-CheckSum {
     [cmdletbinding()]
     [OutputType([pscustomobject])]

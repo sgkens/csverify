@@ -1,5 +1,5 @@
-using module colortune\Get-ColorTune.psm1
-using module cfbytes\cfbytes-class.psm1
+using module modules\colortune\Get-ColorTune.psm1
+using module modules\cfbytes\cfbytes-class.psm1
 <#
 .SYNOPSIS
 #>

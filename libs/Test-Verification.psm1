@@ -1,4 +1,4 @@
-using module colortune\Get-ColorTune.psm1
+using module modules\colortune\Get-ColorTune.psm1
 using module .\Read-CheckSum.psm1
 using module .\New-CheckSum.psm1
 Function Test-Verification (){

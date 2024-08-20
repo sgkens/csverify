@@ -1,3 +1,4 @@
 /dist
-coverage.xml
 /tools/VERIFICATION.txt
+coverage.xml
+testResults.xml
