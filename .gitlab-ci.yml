@@ -9,32 +9,44 @@ stages:
   - test_powershell # test powershell
   - deploy_psprivate # deploy to psgallary private instance
   - deploy_psgallary # deploy to psgallary
-build-job:
+build-job
   stage: build
+  tags:
+    - pwsh
   script:
     - pwsh.exe
     - write-host -f green "template ci\cd config successfull"
 pester-job:
   stage: pester
+  tags:
+    - pwsh
   script:
     - pwsh.exe
     - write-host -f green "template ci\cd config successfull"
 test-pwsh-job:
   stage: test_pwsh
+  tags:
+    - pwsh
   script:
     - pwsh.exe
     - write-host -f green "template ci\cd config successfull"
 test-powershell-job:
   stage: test_powershell
+  tags:
+    - pwsh
   script:
     - powershell.exe
     - write-host -f green "template ci\cd config successfull"
 psgallary-deploy-job:
   stage: deploy_psgallary
+  tags:
+    - pwsh
   script:
     - pwsh.exe
 psprivate-deploy-job:
   stage: deploy_psprivate
+  tags:
+    - pwsh
   script:
     - pwsh.exe
     - write-host -f green "template ci\cd config successfull"
