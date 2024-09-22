@@ -1,7 +1,3 @@
-# author: mnoxx @ proton me
-# date: Saturday, 24 September 2022 2:24:20 AM
-# version: v1.0
-# env: powershell(5.x), pwsh(7.x)
 stages:
   - build # dependancies
   - pester # pester test script
@@ -49,6 +45,33 @@ psprivate-deploy-job:
     - pwsh
   script:
     - pwsh.exe
-    - write-host -f green "template ci\cd config successfull"
-#include:
-#  - template: auto-devops.gitlab-ci.yml
+    - .\build\bt6-ci-deploy-psgallary.ps1
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" && $CI_BUILD_STAGE == "deploylocal" && $CI_BUILD_STATUS == "success"'
+
+# Create Release Stage
+create_release:
+  stage: release
+  tags:
+    - windows
+  script: 
+    - pwsh.exe
+    - Compress-Archive -Path .\ -DestinationPath Build.gz
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" && $CI_BUILD_STAGE == "deploy" && $CI_BUILD_STATUS == "success"'
+  artifacts:
+    paths:
+      - Build.gz
+      - ./dist/*
+
+# Deploy Coverage to Coverails.io Stage
+deploy_coverage:
+  stage: release
+  tags:
+    - windows
+  script:
+    - pwsh.exe
+    - .\bt8-ci-deploy-coveralls-report.ps1
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" && $CI_BUILD_STAGE == "deploy" && $CI_BUILD_STATUS == "success"'
+
