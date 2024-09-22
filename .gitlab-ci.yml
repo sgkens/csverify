@@ -1,54 +1,26 @@
-# author: mnoxx @ proton me
-# date: Saturday, 24 September 2022 2:24:20 AM
-# version: v1.0
-# env: powershell(5.x), pwsh(7.x)
 stages:
-  - build # dependancies
-  - pester # pester test script
-  - test_pwsh # test powershell core latest
-  - test_powershell # test powershell
-  - deploy_psprivate # deploy to psgallary private instance
-  - deploy_psgallary # deploy to psgallary
-build-job
-  stage: build
+  - test
+  - build
+  - deploy
+
+build-job:
+  stage: test
   tags:
     - pwsh
   script:
     - pwsh.exe
     - write-host -f green "template ci\cd config successfull"
 pester-job:
-  stage: pester
+  stage: build
   tags:
     - pwsh
   script:
     - pwsh.exe
     - write-host -f green "template ci\cd config successfull"
 test-pwsh-job:
-  stage: test_pwsh
+  stage: deploy
   tags:
     - pwsh
   script:
     - pwsh.exe
     - write-host -f green "template ci\cd config successfull"
-test-powershell-job:
-  stage: test_powershell
-  tags:
-    - pwsh
-  script:
-    - powershell.exe
-    - write-host -f green "template ci\cd config successfull"
-psgallary-deploy-job:
-  stage: deploy_psgallary
-  tags:
-    - pwsh
-  script:
-    - pwsh.exe
-psprivate-deploy-job:
-  stage: deploy_psprivate
-  tags:
-    - pwsh
-  script:
-    - pwsh.exe
-    - write-host -f green "template ci\cd config successfull"
-#include:
-#  - template: auto-devops.gitlab-ci.yml
