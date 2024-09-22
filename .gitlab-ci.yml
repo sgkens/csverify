@@ -1,164 +1,26 @@
 stages:
-  - tests
+  - test
   - build
-  - deploylocal
   - deploy
-  - release
 
-pester_test:
-  stage: tests
+build-job:
+  stage: test
   tags:
-    - windows
-  script:
-    - echo "Running tests -> pester_test"
     - pwsh
-    - install-module -name 'pester' -RequiredVersion '5.5.0' -Repository 'psgallery' -confirm:$false
-    - Import-Module -name pester -RequiredVersion '5.5.0'
-    - invoke-Pester -Script .\test\pester-unit-test.ps1 -CI || exit 1
-
-# Pester Test Stage
-pester_test_coverage:
-  stage: tests
-  tags:
-    - windows
   script:
-    - echo "Running tests -> pester_test_coverage"
-    - pwsh
-    - install-module -name 'pester' -RequiredVersion '5.5.0' -Repository 'psgallery' -confirm:$false
-    - Import-Module -name pester -RequiredVersion '5.5.0'
-    - invoke-Pester -Script .\build\bt0-ci-test-pester.ps1 -CI || exit 1
-  artifacts:
-    paths:
-    - ./coverage.xml
-
-# Script Analyzer Test Stage
-script_analyzer:
-  stage: tests
-  tags:
-    - windows
-  script:
-    - echo "Running tests -> script_analyzer"
-    - pwsh
-    - find-module -name PSScriptAnalyzer -Repository PSGallery | install-module -Scope CurrentUser -Force -SkipPublisherCheck
-    - Import-Module -Name PSScriptAnalyzer   
-    - .\build\bt1-p2-ci-test-pssa.ps1
-  artifacts:
-    paths:
-    - ./coverage.xml
-
-# Build Module Stage
-build_module:
+    - pwsh.exe
+    - write-host -f green "template ci\cd config successfull"
+pester-job:
   stage: build
   tags:
-    - windows
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main" && $CI_BUILD_STAGE == "tests" && $CI_BUILD_STATUS == "success"'
-  script:
     - pwsh
-    - Find-Module -name 'psmpacker' -repository 'powershell' | install-Module -force
-    - import-module -name 'psmpacker'
-    - .\build\bt1-ci-build-module.ps1
-  artifacts:
-    paths:
-    - ./dist/*
-    - ./coverage.xml
-
-# Create Nuget Package Stage
-create_nuget:
-  stage: build
-  tags:
-    - windows
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main" && $CI_BUILD_STAGE == "tests" && $CI_BUILD_STATUS == "success"'
   script:
     - pwsh.exe
-    - find-Module -Repository 'powershell' -Name 'nupsforge' | Install-module -force
-    - Import-Module -Name 'nupsforge' -force
-    - .\build\bt2-ci-create-packages.ps1
-  artifacts:
-    paths:
-    - ./dist/*
-    - ./coverage.xml
-
-# Deploy GitLab Package Stage
-deploy_gitlab:
-  stage: deploylocal
-  tags:
-    - windows
-  script:
-    - pwsh.exe
-    - .\build\bt3-ci-deploy-pushtogitlab.ps1
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main" && $CI_BUILD_STAGE == "build" && $CI_BUILD_STATUS == "success"'
-  artifacts:
-    paths:
-    - ./dist/*
-    - ./coverage.xml
-
-# Deploy Proget Packages Stage
-deploy_proget:
-  stage: deploylocal
-  tags:
-    - windows
-  script:
-    - pwsh.exe
-    - .\build\bt4-ci-deploy-pushtoproget.ps1
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main" && $CI_BUILD_STAGE == "build" && $CI_BUILD_STATUS == "success"'
-  artifacts:
-    paths:
-    - ./dist/*
-    - ./coverage.xml
-
-# Deploy Chocolatey Package Stage
-deploy_chocolatey:
+    - write-host -f green "template ci\cd config successfull"
+test-pwsh-job:
   stage: deploy
   tags:
-    - windows
+    - pwsh
   script:
     - pwsh.exe
-    - .\build\BT5-CI-deploy-PushToChoco.ps1
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main" && $CI_BUILD_STAGE == "deploylocal" && $CI_BUILD_STATUS == "success"'
-  artifacts:
-    paths:
-    - ./dist/*
-    - ./coverage.xml
-
-# Deploy PSGallary Package Stage
-deploy_psgallary:
-  stage: deploy
-  tags:
-    - windows
-  script:
-    - pwsh.exe
-    - .\build\bt6-ci-deploy-psgallary.ps1
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main" && $CI_BUILD_STAGE == "deploylocal" && $CI_BUILD_STATUS == "success"'
-
-# Create Release Stage
-create_release:
-  stage: release
-  tags:
-    - windows
-  script: 
-    - pwsh.exe
-    - Compress-Archive -Path .\ -DestinationPath Build.gz
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main" && $CI_BUILD_STAGE == "deploy" && $CI_BUILD_STATUS == "success"'
-  artifacts:
-    paths:
-      - Build.gz
-      - ./dist/*
-
-# Deploy Coverage to Coverails.io Stage
-deploy_coverage:
-  stage: release
-  tags:
-    - windows
-  script:
-    - pwsh.exe
-    - .\bt8-ci-deploy-coveralls-report.ps1
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main" && $CI_BUILD_STAGE == "deploy" && $CI_BUILD_STATUS == "success"'
-
+    - write-host -f green "template ci\cd config successfull"

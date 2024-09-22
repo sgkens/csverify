@@ -5,26 +5,26 @@ Function Read-CheckSum {
     [OutputType([pscustomobject])]
     param(
         [Parameter(Mandatory = $false)]
-        [string]$Path,
+        [string]$File,
         [Parameter(Mandatory = $false)]
         [string]$FromString
     )
 
     try {
+
         if ($FromString) {
             $verification = $FromString 
-            [console]::write("  └─ Reading Checksums from String: o--($(Get-ColorTune -Text "$Path\VERIFICATION.txt" -color Magenta)`n")
-            [console]::write("  └─ $(Get-ColorTune -Text Done. -color green)`n")
+            [console]::write("  └─• Getting Checksums from [String]: o--($(Get-ColorTune -Text '[STRING]' -color Magenta))`n")
         }
         else {
-            [console]::write("  └─ Reading Checksums from file: o--($(Get-ColorTune -Text "$Path\VERIFICATION.txt" -color Magenta)`n")
-            $verification = (Get-Content -Path "$Path\tools\VERIFICATION.txt" -Raw)
-            [console]::write("  └─ $(Get-ColorTune -Text Done. -color green)`n")
+            $File = $(Get-ItemProperty $File).FullName
+            [console]::write("  └─• Getting Checksums from [file]: o--($(Get-ColorTune -Text $File -color Magenta))`n")
+            $verification = (Get-Content -Path $File -Raw)
         }
     }
     catch {
-        [console]::write("$(Get-ColorTune -Text "[Read-CheckSum]=> Path not found:" -color red) $($path)`n")
-        return
+        [console]::write("  └─• $(Get-ColorTune -Text "Error: " -color red) $($_.Exception.Message)`n")
+        return;
     }
 
     $checksumObject = @()
