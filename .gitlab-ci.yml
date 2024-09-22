@@ -5,7 +5,8 @@ stages:
   - test_powershell # test powershell
   - deploy_psprivate # deploy to psgallary private instance
   - deploy_psgallary # deploy to psgallary
-build-job
+
+build-job:
   stage: build
   tags:
     - pwsh
