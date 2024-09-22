@@ -3,27 +3,28 @@ using module .\Read-CheckSum.psm1
 using module .\New-CheckSum.psm1
 Function Test-Verification (){
     [cmdletbinding()]
-    [OutputType("PsCustomObject")]
+    [OutputType("System.Collections.ArrayList")]
     param(
         [Parameter(Mandatory=$true)]
-        [String]$filepath
+        [String]$path
     )
-    $resolved_path = $null
+
     try {
-        $resolved_path = (resolve-Path -path $filepath).path
+        $path = $(Get-ItemProperty $path)
         [console]::write("Generating New Verification: $(Get-ColorTune -Text "Hashed Checksums" -color Yellow)`n")
-        $checksum = Read-CheckSum -FromString (New-CheckSum -Path $resolved_path)
-        $checksum_verify = Read-CheckSum -Path $resolved_path
+
+        [console]::write("  └─• Generating Checksums of current Root: o--($(Get-ColorTune -Text $path -color cyan))`n")
+        $checksum = Read-CheckSum -FromString (New-CheckSum -Path $path)
+
+        [console]::write("  └─• Reading [Checksums]<=>[Hashes] from file: o--($(Get-ColorTune -Text $path -color cyan))`n")
+        $checksum_verify = Read-CheckSum -File "$path\tools\VERIFICATION.txt"
     }
     catch [System.Exception] {
-        [console]::write("$(Get-ColorTune -Text "Souce Path not found:" -color red) $Path $($_.Exception.Message)`n")
-        throw [System.Exception]::new("Source Path not found: $Path $($_.Exception.Message)")
+        [console]::write("  └─• $(Get-ColorTune -Text "Souce Path not found:" -color red) $Path $($_.Exception.Message)`n")
     }
 
-
     $verification_results = @()
-    [console]::write("`nRunning Verification: $(Get-ColorTune -Text "Hashed Checksums" -color Yellow)`n")
-    $checksum
+    [console]::write("  └─• Running => [CheckSum] Verification: $(Get-ColorTune -Text "Hashed Checksums" -color Yellow)`n")
     
     foreach($item in $checksum){
         if($item.Path -eq $checksum_verify.Where({$_.Path -eq $item.Path}).Path){
@@ -45,7 +46,12 @@ Function Test-Verification (){
             }
         }
     }
-    [console]::write("  └─ Verified o--($(Get-ColorTune -Text "$($CheckSum.count)" -color Magenta) / $($CheckSum.count) Files)`n")
+    [int]$failed = $verification_results.where({ $_.Status -match "Failed" }).count
+    if ($failed -ne 0) {
+        throw [system.exception]::new("Verification Failed ($(Get-ColorTune -Text "$failed failed" -color red) of $($CheckSum.count) Files)")
+    }else{
+        [console]::write("  └─• Verification Successfull o--($(Get-ColorTune -Text "$($CheckSum.count)" -color green) of $($CheckSum.count) Files)`n")
+    }
     return $verification_results
 }
 Export-ModuleMember -Function Test-Verification

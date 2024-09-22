@@ -10,6 +10,8 @@ Function New-CheckSum (){
         [String]$Path
     )
 
+    $path = $(Get-ItemProperty $Path).FullName
+
     $VerificationText = @'
 VERIFICATION
 Verification is intended to assist the moderators and community
@@ -19,13 +21,15 @@ To Verify the files in this package, please download/Install module csverify fro
 Install-Module -Name csverify
 Import-Module -Name csverify
 
+Alternatively, you can download the latest release from the Releases >> (https://github.com/nytescipts/csverify/releases page.
+
 Then run the following command:
 Test-Verification
 
 -[checksum hash]-
 ___________________
 '@
-    [console]::write("  └─ Generating New Checksums: o--($(Get-ColorTune -Text "$Path\*" -color Magenta)`n")
+    [console]::write("  └─• Generating New Checksums: o--($(Get-ColorTune -Text "$Path\*" -color Magenta)`n")
 
     # Get all files in the module folder recursively
     $files = Get-ChildItem -Path $path -Recurse -Exclude "VERIFICATION.txt",".git" | 
@@ -43,8 +47,6 @@ ___________________
         $hash = Get-FileHash -Path $_.FullName -Algorithm SHA256 | Select-Object -ExpandProperty Hash
         $hashes += "$size | $($hash.ToString()) | .\$relativePath `n"  
     }
-    
-    [console]::write("  └─ $(Get-ColorTune -Text Done. -color green)`n")
     return $hashes.TrimEnd("`n`n")
 
 }
