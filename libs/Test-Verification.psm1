@@ -10,7 +10,7 @@ Function Test-Verification (){
     )
     try {
         $path = $(Get-ItemProperty $path).FullName
-        [console]::write("testing verification file $($global:_csverify.prop.invoke("$path\tools\verification.txt"))`n")
+        [console]::write("-─◉ testing verification file $($global:_csverify.prop.invoke("$path\tools\verification.txt"))`n")
         $checksum = Read-CheckSum -FromString (New-CheckSum -Path $path)
         $checksum_verify = Read-CheckSum -File "$path\tools\verification.txt"
     }
@@ -43,12 +43,15 @@ Function Test-Verification (){
     }
     [int]$failed = $verification_results.where({ $_.Status -match "Failed" }).count
     if ($failed -ne 0) {
-        throw [system.exception]::new("verification failed ($(Get-ColorTune -Text "$failed failed" -color red) of $($CheckSum.count) files)")
+        foreach ($f in $verification_results.where({ $_.Status -match "Failed" })) {
+            [console]::write(" $($global:_csverify.failedataWriter.invoke($f.Path))`n") 
+        }
+        throw [system.exception]::new("─◉ verification failed ($(Get-ColorTune -Text "$failed failed" -color red) of $($CheckSum.count) files)")
     }else{
-        [console]::write("  └─◉ verification successfull") 
-        [console]::write(" $($global:_csverify.kvString.invoke("ReadFromVerificationFile", $CheckSum.count.ToString()))")
-        [console]::write(" $($global:_csverify.kvString.invoke("ReadFromRootFolder", $verification_results.count.ToString()))`n")
-        [console]::write("  └─◉ result $(csole -s $($CheckSum.count)) files Verified-($(Get-ColorTune -Text "$($verification_results.count)" -color green) of $($CheckSum.count) files)`n")
+        [console]::write("  └─◉ $(csole -s 'verification successfull' -c green)`n") 
+        [console]::write(" $($global:_csverify.kvString.invoke("ReadFromVerificationFile", $CheckSum.count))")
+        [console]::write(" $($global:_csverify.kvString.invoke("ReadFromRootFolder", $checksum_verify.count))`n")
+        [console]::write("  └─◉ result $(csole -s $($CheckSum.count)) files verified-($(Get-ColorTune -Text "$($checksum_verify.count)" -color green) of $($CheckSum.count) files)`n")
     }
     return $verification_results
 }

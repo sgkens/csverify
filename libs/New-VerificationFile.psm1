@@ -12,7 +12,7 @@ Function New-VerificationFile {
         [String]$Output
     )
    
-    [console]::write("generating new verification file $($global:_csverify.prop.invoke($Path))`n")
+    [console]::write("-─◉ generating new verification file $($global:_csverify.prop.invoke($Path))`n")
     
     $path = $(Get-ItemProperty $Path).FullName
     $outPath = $(Get-ItemProperty $Output).FullName

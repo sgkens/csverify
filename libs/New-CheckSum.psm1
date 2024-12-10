@@ -29,7 +29,7 @@ Test-Verification
 -[checksum hash]-
 ___________________
 '@
-    [console]::write("  └─◉ generating new checksums from path $($global:_csverify.prop.invoke("$Path\*"))`n")
+    [console]::write("-─◉ generating new checksums from path $($global:_csverify.prop.invoke("$Path\*"))`n")
     
     # Get all files in the module folder recursively
     $files = Get-ChildItem -Path $path -Recurse -Exclude "VERIFICATION.txt",".git" | 

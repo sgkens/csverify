@@ -14,7 +14,7 @@ Function Read-CheckSum {
 
         if ($FromString) {
             $verification = $FromString 
-            [console]::write("  └─◉ reading checksums from string`n")            
+            [console]::write("-─◉ reading checksums from string`n")            
         }
         else {
             $File = $(Get-ItemProperty $File).FullName
