@@ -29,8 +29,8 @@ Test-Verification
 -[checksum hash]-
 ___________________
 '@
-    [console]::write("  └─• Generating New Checksums: o--($(Get-ColorTune -Text "$Path\*" -color Magenta)`n")
-
+    [console]::write("  └─◉ generating new checksums from path $($global:_csverify.prop.invoke("$Path\*"))`n")
+    
     # Get all files in the module folder recursively
     $files = Get-ChildItem -Path $path -Recurse -Exclude "VERIFICATION.txt",".git" | 
         Where-Object { $_.PSIsContainer -eq $false } | 

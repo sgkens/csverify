@@ -14,16 +14,16 @@ Function Read-CheckSum {
 
         if ($FromString) {
             $verification = $FromString 
-            [console]::write("  └─• Getting Checksums from [String]: o--($(Get-ColorTune -Text '[STRING]' -color Magenta))`n")
+            [console]::write("  └─◉ reading checksums from string`n")            
         }
         else {
             $File = $(Get-ItemProperty $File).FullName
-            [console]::write("  └─• Getting Checksums from [file]: o--($(Get-ColorTune -Text $File -color Magenta))`n")
+            [console]::write("  └─◉ parsing checksums from $($global:_csverify.prop.invoke((Get-ItemProperty $File).fullname))`n")
             $verification = (Get-Content -Path $File -Raw)
         }
     }
     catch {
-        [console]::write("  └─• $(Get-ColorTune -Text "Error: " -color red) $($_.Exception.Message)`n")
+        [console]::write("  └─◉ $(Get-ColorTune -Text "Error: " -color red) $($_.Exception.Message)`n")
         return;
     }
 

@@ -12,15 +12,15 @@ Function New-VerificationFile {
         [String]$Output
     )
    
-    [console]::write("  └─ Generating Verification File: $(Get-ColorTune -Text "Hashed Checksums" -color Yellow)`n")
+    [console]::write("generating new verification file $($global:_csverify.prop.invoke($Path))`n")
     
     $path = $(Get-ItemProperty $Path).FullName
     $outPath = $(Get-ItemProperty $Output).FullName
    
-    New-CheckSum -Path $path | Out-File -FilePath "$outPath\VERIFICATION.txt" -Encoding utf8
+    New-CheckSum -Path $path | Out-File -FilePath "$outPath\verification.txt" -Encoding utf8
     
-    [console]::write("  └─ $(Get-ColorTune -Text "Verification file created:" -color green) $outPath\VERIFICATION.txt`n")
-   
-    Read-CheckSum -File "$outPath\VERIFICATION.txt"
+    [console]::write("  └─◉ $(Get-ColorTune -Text "verification file created" -color green) $($global:_csverify.prop.invoke("$Output\verification.txt"))`n")
+    
+    Read-CheckSum -File "$outPath\verification.txt"
 }
 Export-ModuleMember -Function New-VerificationFile
