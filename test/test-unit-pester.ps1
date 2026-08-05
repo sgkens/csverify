@@ -41,10 +41,17 @@ Describe 'csverify module architecture' {
     }
 
     It 'does not expose private helpers or legacy aliases' {
-        Get-Command New-AsciiColor -ErrorAction SilentlyContinue | Should -BeNullOrEmpty
-        Get-Command ConvertTo-CsDisplaySize -ErrorAction SilentlyContinue | Should -BeNullOrEmpty
-        Get-Command csole -ErrorAction SilentlyContinue | Should -BeNullOrEmpty
-        Get-Command Get-ColorTune -ErrorAction SilentlyContinue | Should -BeNullOrEmpty
+        $exportedCommands = (Get-Module -Name csverify -ErrorAction Stop).ExportedCommands
+        $privateNames = @(
+            'New-AsciiColor'
+            'ConvertTo-CsDisplaySize'
+            'csole'
+            'Get-ColorTune'
+        )
+
+        foreach ($privateName in $privateNames) {
+            $exportedCommands.ContainsKey($privateName) | Should -BeFalse
+        }
     }
 }
 
