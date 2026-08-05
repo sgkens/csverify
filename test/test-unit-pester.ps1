@@ -1,4 +1,9 @@
 $modulePath = [System.IO.Path]::Combine($PSScriptRoot, '..', 'csverify.psd1')
+
+foreach ($loadedModule in @(Get-Module -Name csverify -All)) {
+    Remove-Module -ModuleInfo $loadedModule -Force -ErrorAction Stop
+}
+
 Import-Module -Name $modulePath -Force
 
 BeforeAll {
