@@ -10,24 +10,9 @@
         "iconurl": "https://raw.githubusercontent.com/phellams/phellams-general-resources/main/logos/csverify/dist/png/csverify-128x128.png",
         "phwriter": true,
         "phwriter_source": "https://gitlab.com/phellams/csverify/-/blob/main/README.md",
-        "pester_test_files": [
-            ".\\cmdlets\\*.psm1",
-            ".\\*.psm1"
-        ],
-        "modulefiles": [
-            "csverify.psm1",
-            "csverify.psd1",
-            "LICENSE",
-            "icon.png",
-            "README.md",
-            "readme.txt"
-        ],
-        "modulefolders": [
-            "libs",
-            "tools"
-        ],
-        "moduleexclude": [
-            "commit-helper.ps1"
-        ]
+        "pester_test_files": ["./Public/*.ps1", "./Private/*.ps1", "./Private/Helpers/*.ps1", "./*.psm1"],
+        "modulefiles": ["csverify.psm1", "csverify.psd1", "LICENSE", "icon.png", "README.md", "readme.txt"],
+        "modulefolders": ["Public", "Private", "Lib", "tools"],
+        "moduleexclude": ["commit-helper.ps1"]
     }
 }
