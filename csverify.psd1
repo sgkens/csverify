@@ -1,12 +1,12 @@
 @{
 
     RootModule             = "csverify.psm1"
-    ModuleVersion          = '0.3.8'
+    ModuleVersion          = '0.3.9'
     CompatiblePSEditions   = @()
     GUID                   = '8089eced-de22-4dae-a7f6-8646d9c69d14'
     Author                 = 'Garvey k. Snow'
     CompanyName            = 'phellams'
-    Copyright              = '2023 Garvey k. Snow. All rights reserved.'
+    Copyright              = '2024 Garvey k. Snow. All rights reserved.'
     Description            = 'Generates and validates path-bound SHA-256 verification manifests for PowerShell packages and directory trees.'
     PowerShellVersion      = '7.0'
     PowerShellHostName     = ''
