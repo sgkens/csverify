@@ -81,6 +81,11 @@ Describe 'private helper behavior' {
             { ConvertTo-CsRelativePath -Path '/rooted/file' } | Should -Throw
             { ConvertTo-CsRelativePath -Path '../outside' } | Should -Throw
         }
+
+        It 'serializes mixed-separator paths consistently' {
+            ConvertTo-CsManifestPath -Path 'nested\directory/file.txt' |
+                Should -BeExactly './nested/directory/file.txt'
+        }
     }
 }
 

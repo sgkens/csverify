@@ -32,3 +32,24 @@ function ConvertTo-CsRelativePath {
 
     return $normalized
 }
+
+function ConvertTo-CsManifestPath {
+    [CmdletBinding()]
+    [OutputType([string])]
+    param(
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
+        [string]$Path
+    )
+
+    # Compose the manifest-relative path through .NET first. The legacy
+    # manifest format is deliberately serialized with '/' on every platform.
+    $combinedPath = [System.IO.Path]::Combine('.', $Path)
+    $normalizedPath = ConvertTo-CsRelativePath -Path $combinedPath
+    $portablePath = [System.IO.Path]::Combine(
+        '.',
+        $normalizedPath.Replace('/', [System.IO.Path]::DirectorySeparatorChar))
+
+    # Legacy manifests use '/' regardless of the host operating system.
+    return $portablePath.Replace([System.IO.Path]::DirectorySeparatorChar, '/')
+}

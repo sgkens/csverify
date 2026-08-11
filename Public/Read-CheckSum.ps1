@@ -90,7 +90,7 @@ function Read-CheckSum {
             PSTypeName = 'CsVerify.ChecksumRecord'
             Size       = $size
             Hash       = $hash.ToUpperInvariant()
-            Path       = "./$path"
+            Path       = ConvertTo-CsManifestPath -Path $path
         }
     }
 }

@@ -111,7 +111,7 @@ ___________________
             $fileInfo = [System.IO.FileInfo]::new($filePath)
             $size = ConvertTo-CsDisplaySize -Bytes $fileInfo.Length
             $hash = (Get-FileHash -LiteralPath $filePath -Algorithm SHA256).Hash
-            [void]$builder.AppendLine("$size | $hash | ./$relativePath")
+            [void]$builder.AppendLine("$size | $hash | $(ConvertTo-CsManifestPath -Path $relativePath)")
         }
 
         return $builder.ToString().TrimEnd("`r", "`n")

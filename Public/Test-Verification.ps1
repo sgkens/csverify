@@ -22,21 +22,21 @@ function Test-Verification {
     param(
         [Parameter(Mandatory, Position = 0)]
         [ValidateNotNullOrEmpty()]
-        [string]$Path
+        [string]$RootPath
     )
 
-    $rootPath = [System.IO.Path]::GetFullPath($Path)
-    if (-not [System.IO.Directory]::Exists($rootPath)) {
+    $full_path = [System.IO.Path]::GetFullPath($RootPath)
+    if (-not [System.IO.Directory]::Exists($full_path)) {
         throw [System.IO.DirectoryNotFoundException]::new("Verification root directory was not found: $Path")
     }
 
-    $verificationFile = [System.IO.Path]::Combine($rootPath, 'tools', 'VERIFICATION.txt')
+    $verificationFile = [System.IO.Path]::Combine($full_path, 'tools', 'VERIFICATION.txt')
     if (-not [System.IO.File]::Exists($verificationFile)) {
         throw [System.IO.FileNotFoundException]::new('Verification file was not found.', $verificationFile)
     }
 
     Write-Verbose "Testing VERIFICATION file $(Format-CsProperty -Value $verificationFile)"
-    $currentRecords = @(Read-CheckSum -FromString (New-CheckSum -Path $rootPath))
+    $currentRecords = @(Read-CheckSum -FromString (New-CheckSum -Path $full_path))
     $expectedRecords = @(Read-CheckSum -File $verificationFile)
 
     $pathComparer = if ($IsWindows) {
@@ -71,7 +71,7 @@ function Test-Verification {
             $results.Add([pscustomobject]@{
                     PSTypeName   = 'CsVerify.VerificationResult'
                     Status       = 'Unexpected'
-                    Path         = "./$normalizedPath"
+                    Path         = ConvertTo-CsManifestPath -Path $normalizedPath
                     Algorithm    = 'SHA256'
                     ExpectedHash = $null
                     ActualHash   = $record.Hash
@@ -91,7 +91,7 @@ function Test-Verification {
         $results.Add([pscustomobject]@{
                 PSTypeName   = 'CsVerify.VerificationResult'
                 Status       = $status
-                Path         = "./$normalizedPath"
+                Path         = ConvertTo-CsManifestPath -Path $normalizedPath
                 Algorithm    = 'SHA256'
                 ExpectedHash = $expectedRecord.Hash
                 ActualHash   = $record.Hash
@@ -106,7 +106,7 @@ function Test-Verification {
             $results.Add([pscustomobject]@{
                     PSTypeName   = 'CsVerify.VerificationResult'
                     Status       = 'Missing'
-                    Path         = "./$normalizedPath"
+                    Path         = ConvertTo-CsManifestPath -Path $normalizedPath
                     Algorithm    = 'SHA256'
                     ExpectedHash = $expectedRecord.Hash
                     ActualHash   = $null
