@@ -1,346 +1,374 @@
-<div align="center">
-    <img src="https://raw.githubusercontent.com/phellams/phellams-general-resources/main/logos/csverify/dist/png/csverify-128x128.png" alt="PWSL Logo">
-    <h1><strong>CSVerify</strong></h1>
-    <p><b>Powershell Checksum Verification Module</b></p>
-    <hr>
-    <h2>About This Project</h2>
-    <p>Powershell Module Designed to assist in ensuring the integrity of a codebase by generating and verifying a <b>VERIFICATION.txt</b> file, created for poweshell packages distributed via chocolatey, can be used to verify the integrity of any codebase.</p>
-    <small>Available on <strong>MacOS</strong>, <strong>Linux</strong>, and <strong>Windows</strong></small>
-    <br>
-    <span>
-        <a href="https://gitlab.com/phellams/csverify#CMDLET-Reference">CMDLET-Reference</a> |
-        <a href="https://github.com/phellams/csverify">GitHub</a> |
-        <a href="https://www.powershellgallery.com/packages/csverify">PSGallery</a> |
-        <a href="https://chocolatey.org/packages/csverify">Chocolatey</a>
-    </span>
-    <hr>
+# csverify
 
-![license][license-badge]
+csverify is a PowerShell 7 module that generates, parses, and validates path-bound SHA-256 records stored in a legacy `VERIFICATION.txt` manifest.
 
-</div>
+## Requirements
 
-<details>
-<summary><strong>📚Table of Contents</strong></summary>
+### Conceptual
 
-- [About This Project](#about-this-project)
-- [**Features**](#features)
-- [**Workflow**](#workflow)
-  - [Verification File](#verification-file)
-  - [Verification](#verification)
-- [**Installation**](#installation)
-  - [Additinonal Installation Options:](#additinonal-installation-options)
-    - [📦 GitLab Packages](#-gitlab-packages)
-    - [🧺 Generic Asset](#-generic-asset)
-    - [💾 Git Clone](#-git-clone)
-- [**Build**](#build)
-  - [`localbuilder` Script Parameters](#localbuilder-script-parameters)
-  - [Depenedencies Modules(linux/Winx64)](#depenedencies-moduleslinuxwinx64)
-  - [Dependecies Binaries(linux/Winx64)](#dependecies-binarieslinuxwinx64)
-- [**Building Using Automator**](#building-using-automator)
-- [**Building Using PowerShell 7.x**](#building-using-powershell-7x)
-- [**CMDLET Reference**](#cmdlet-reference)
-    - [***`New-CheckSum`***](#new-checksum)
-    - [***`Read-CheckSum`***](#read-checksum)
-    - [***`New-VerificationFile`***](#new-verificationfile)
-    - [***`Test-Verification`***](#test-verification)
-</details>
+The module is intended for package builds, source distributions, and automation workflows that need to detect modified, missing, or unexpected files. It has no required PowerShell module dependencies at runtime.
 
-## **Features**
+### Strict Reference
 
- - Generates and returns `sha256` hash for each file within the specified folder contained within a VERIFICATION.txt file.
- - Reads the verification file and returns a `PSCustomObject` *array* containg the file, path, size and 256 hash.
- - Unitilizes `New-Checksum` & `Read-CheckSum` to generate and read the verification file.
- - Read and save checksums to `VERIFICATION.txt` file with `New-VerificationFile`.
+| Requirement | Value |
+| --- | --- |
+| PowerShell | 7.0 or later |
+| Operating systems | Windows, Linux, macOS |
+| Default algorithm | SHA-256 |
+| Manifest location used by `Test-Verification` | `<package-root>/tools/VERIFICATION.txt` |
+| Current tagged version | `0.3.8` |
+| Runtime module dependencies | None |
 
-## **Workflow**
+## Installation
 
-### Verification File
-
-**`New-VerificationFile`** generates the verification file. recersivlly compiles a list of all files present. For each file, it computes the SHA256 hash and records the **file**, **path**, **size** and its **hash** in the verification file(**VERIFICATION.txt**).
-
->Default output .\tools\VERIFICATION.txt
+### PowerShell Gallery
 
 ```powershell
-cd /path/to/folder
-New-VerificationFile 
+# PowerShell 7
+Install-Module -Name csverify -Scope CurrentUser
+Import-Module -Name csverify
 ```
 
-⚪ **VERIFICATION.txt** output example:
+### Chocolatey
 
-<pre>
-VERIFICATION
-Verification is intended to assist the moderators and community
-in verifying that this package's contents are trustworthy.
+```powershell
+# Windows PowerShell or PowerShell 7 running as required by Chocolatey
+choco install csverify
+Import-Module -Name csverify
+```
 
-To Verify the files in this package, please download/Install module csverify from chocalatey.org or from the powershell gallery.
-Get-CheckSum -Path $Path
-e
--[checksum hash]-
-___________________
-1.23KB | 37511B972FBE38C353B680D55EC5CFE51C04C79CA3304922301C5AB44BAC94F9 | .\README.md
-1.05KB | D3FF5A1DB41D78399BD676A16C9321F127BB52B7E7EBF56B14EC5ABC21971213 | .\LICENSE
-0.34KB | 813818335A37527755ABDCF200322962E340E2278BBF3E515B21D4D232D9A92A | .\csverify.psm1
-4.44KB | 394B7998E79D6DDE3B6FF1318550ED21BC9671F2C8F1AA2354861A120738B422 | .\csverify.psd1
-</pre>
+### Repository Checkout
 
-### Verification
-
-**`Test-Verification`** is used to verify the integrity of the codebase base it compares the `SHA256` values from **VERIFICATION.txt** file and Returns file report
-
-⚪ Verification output
-<pre>
-Running Verification: Hashed Checksums
-  └─ Verified o--(5 / 5 Files » Found 1 that could not be verified)
-Status   hash                                                             Path                                Size
-------   ----                                                             ----                                ----
-Verified 0DC558C6B5C5B34D9B77D177AEE6130AEAF75C10A0948C635AEC98F5C445790E .\README.md                         0.95KB
-Verified D3FF5A1DB41D78399BD676A16C9321F127BB52B7E7EBF56B14EC5ABC21971213 .\LICENSE                           1.05KB
-Verified F5CEFD9EE2498D5A6BB80F3F26A6B07FD405F3AB3AB63917426CB31EBF5719B9 .\csverify.psm1                     0.35KB
-Verified EB749553314E1280C22EB6CD2E7CF3687EBF0A8D6C259A59C33AA4DFB215D85D .\csverify.psd1                     4.44KB                1.14KB
-</pre>
-
-
-## **Installation**
-
-Phellams modules are available from [**PowerShell Gallery**](https://www.powershellgallery.com/packages/commitfusion) and [**Chocolatey**](https://chocolatey.org/packages/commitfusion). you can access the raw assets via [**Gitlab Generic Assets**](https://gitlab.com/phellams/commitfusion/-/packages?orderBy=name&sort=desc&search[]=commitfusion) or nuget repository via [**Gitlab Packages**](https://gitlab.com/phellams/commitfusion/-/packages/?orderBy=name&sort=desc&search[]=commitfusion&type=NuGet).
-
-|▓▓▓▓▒▒▒▒░░░|▓▓▓▓▒▒▒▒░░░|▓▓▓▓▒▒▒▒░░░|
-|-|-|-|
-|📦 PSGallery | <a href="https://www.powershellgallery.com/packages/csverify"> <img src="https://img.shields.io/powershellgallery/v/csverify?label=version&style=flat-square&logoColor=blue&labelColor=23CD5C5C&color=%231E3D59" alt="powershellgallery"></a> | <img src="https://img.shields.io/powershellgallery/dt/csverify?style=flat-square&logoColor=blue&label=downloads&labelColor=23CD5C5C&color=%231E3D59" alt="powershellgallery-downloads"> |
-|📦 Chocolatey | <a href="https://community.chocolatey.org/packages/csverify/"><img src="https://img.shields.io/chocolatey/v/csverify?label=version&include_prereleases&style=flat-square&logoColor=blue&labelColor=23CD5C5C&color=%231E3D59" alt="chocolatey"/></a> | <img src="https://img.shields.io/chocolatey/dt/csverify?style=flat-square&logoColor=blue&label=downloads&include_prereleases&labelColor=23CD5C5C&color=%231E3D59" alt="chocolatey-downloads"> |
-
-### Additinonal Installation Options:
- 
-|▓▓▓▓▒▒▒▒░░░|▓▓▓▓▒▒▒▒░░░|▓▓▓▓▒▒▒▒░░░|
-|-|-|-|
-|💼 Releases/Tags | <a href="https://gitlab.com/phellams/csverify/-/releases"> <img src="https://img.shields.io/gitlab/v/release/phellams%2Fcsverify?include_prereleases&style=flat-square&logoColor=%2300B2A9&labelColor=%23CD5C5C&color=%231E3D59" alt="gitlab-release"></a> | <a href="https://gitlab.com/phellams/csverify/-/tags"> <img src="https://img.shields.io/gitlab/v/tag/phellams%2Fcsverify?include_prereleases&style=flat-square&logoColor=%&labelColor=%23CD5C5C&color=%231E3D59" alt="gitlab tags"></a> |
-
-#### 📦 GitLab Packages
-
-Using `nuget`: See the [**packages**](https://gitlab.com/phellams/csverify/-/packages?orderBy=name&sort=asc&search[]=csverify&type=NuGet) page for installation instructions.
-
-> For instructions on adding `nuget` **sources** packages from *GitLab* see [**Releases**](https://github.com/sgkens/csverify/releases) artifacts or via the [**Packages**](https://gitlab.com/phellams/csverify/-/packages?orderBy=name&sort=asc&search[]=csverify&type=NuGet) page.
-
-#### 🧺 Generic Asset
-
-The latest release artifacts can be downloaded from the [**Generic Assets Artifacts**](https://gitlab.com/phellams/csverify/-/packages?orderBy=type&sort=desc&type=Generic) page.
-
-#### 💾 Git Clone
-
-```bash
-# Clone the repository
+```powershell
+# PowerShell 7
 git clone https://gitlab.com/phellams/csverify.git
-cd csverify
-import-module .\
+Set-Location ./csverify
+Import-Module ./csverify.psd1 -Force
 ```
 
-## **Build**
+Release artifacts and packages are available from:
 
-**Phellams** modules are built using either the [**phellams-automator**](https://gitlab.com/phellams/phellams-automator) Docker image paired with the [**Automator-Devops**](https://gitlab.com/phellams/automator-devops) scripts to build and publish modules to:
+- [GitLab releases](https://gitlab.com/phellams/csverify/-/releases)
+- [GitLab packages](https://gitlab.com/phellams/csverify/-/packages)
+- [PowerShell Gallery](https://www.powershellgallery.com/packages/csverify)
+- [Chocolatey Community Repository](https://community.chocolatey.org/packages/csverify)
 
-* [**PowerShell Gallery (PSGallery)**](https://www.powershellgallery.com/packages/csverify)
-* [**Chocolatey**](https://chocolatey.org/packages/csverify)
-* [**GitHub Packages**](https://github.com/phellams/nuget/tree/main/packages/csverify)
+## Verification Model
 
-If you prefer not to use the Docker image, you can run the [**automator-devops**](https://gitlab.com/phellams/automator-devops) scripts locally using **PowerShell 7.x**.
+### Conceptual
 
-Dependencies must be installed manually, either from the [PowerShell Gallery](https://www.powershellgallery.com) or by cloning the module directly from the GitHub/GitLab source repository (see below).
+Directory records are identified by normalized relative path. The hash is a property of the file at that path; it is not a unique record identifier. Different paths may contain identical bytes and therefore share the same hash.
 
----
+Verification compares both path sets:
 
-### `localbuilder` Script Parameters
+- A path in both sets with the same hash is `Verified`.
+- A path in both sets with a different hash is `HashMismatch`.
+- A current path absent from the manifest is `Unexpected`.
+- A manifest path absent from disk is `Missing`.
 
-All build metadata is stored in the `./build_config.json` file. See [**Build Config**](./templates/build_config.template.json) for additional information.
+Every non-verified state causes `Test-Verification` to throw a terminating error after comparison.
+
+### Strict Reference
+
+```mermaid
+flowchart TD
+    A[Enumerate current files] --> B[Calculate SHA-256 records]
+    C[Read tools/VERIFICATION.txt] --> D[Validate expected records]
+    B --> E[Index current records by normalized path]
+    D --> F[Index expected records by normalized path]
+    E --> G[Compare both path sets]
+    F --> G
+    G --> H{Result}
+    H -->|Same path and hash| I[Verified]
+    H -->|Same path, different hash| J[HashMismatch]
+    H -->|Current only| K[Unexpected]
+    H -->|Expected only| L[Missing]
+```
+
+Checksums establish byte consistency with the supplied manifest. If an attacker can replace both an artifact and its checksum manifest, matching checksums do not establish publisher authenticity. Obtain manifests through a trusted channel or combine checksum verification with an independently trusted signature.
+
+## Quick Start
+
+### Generate a Manifest String
+
+`New-CheckSum` returns the complete legacy manifest as a string and does not write a file.
+
+```powershell
+# PowerShell 7, repository or package root
+$manifest = New-CheckSum -Path './dist/package'
+$manifest | Set-Content -LiteralPath './checksums-preview.txt' -Encoding utf8NoBOM
+```
+
+### Create `tools/VERIFICATION.txt`
+
+Both directories must already exist. The command supports `-WhatIf` and replaces the destination file when execution is approved.
+
+```powershell
+# PowerShell 7, project root
+$PACKAGE_ROOT = [System.IO.Path]::GetFullPath('./dist/package')
+$TOOLS_ROOT = [System.IO.Path]::Combine($PACKAGE_ROOT, 'tools')
+[System.IO.Directory]::CreateDirectory($TOOLS_ROOT) | Out-Null
+
+New-VerificationFile -RootPath $PACKAGE_ROOT -OutputPath $TOOLS_ROOT
+```
+
+### Read a Manifest
+
+Returned records contain raw strings and no ANSI escape sequences.
+
+```powershell
+# PowerShell 7
+$records = Read-CheckSum -File './dist/package/tools/VERIFICATION.txt'
+$records | Select-Object Size, Hash, Path
+```
+
+A manifest can also be parsed from an in-memory string:
+
+```powershell
+# PowerShell 7
+$manifest = New-CheckSum -Path './dist/package'
+$records = Read-CheckSum -FromString $manifest
+$records | ConvertTo-Json -Depth 3
+```
+
+### Verify a Package Tree
+
+`Path` is the package root, not the path to `VERIFICATION.txt`.
+
+```powershell
+# PowerShell 7
+$results = Test-Verification -Path './dist/package'
+$results | Format-Table Status, Path, ExpectedHash, ActualHash -AutoSize
+```
+
+On any mismatch, addition, or deletion, `Test-Verification` throws a terminating error. Use `try/catch` when the caller needs explicit failure handling:
+
+```powershell
+# PowerShell 7
+try {
+    $results = Test-Verification -Path './dist/package' -ErrorAction Stop
+    $results | ConvertTo-Json -Depth 3
+}
+catch {
+    Write-Error "Package verification failed: $($_.Exception.Message)"
+}
+```
+
+## Manifest Format
+
+### Conceptual
+
+The current format contains human-readable verification instructions followed by a delimiter and one record per line. It is retained for compatibility with existing packages and Chocolatey workflows.
+
+### Strict Reference
 
 ```text
-local-builder [-Automator (switch)]
-              [-build_dotnet_lib (switch)]
-              [-PhWriter (switch)]
-              [-Pester (switch)]
-              [-Build (switch)] 
-              [-PsGal (switch)]
-              [-Nuget (switch)] 
-              [-ChocoNuSpec (switch)] 
-              [-ChocoPackage (switch)] 
-              [-ChocoPackageWindows (switch)]
-              [-Cleanup (switch)]
+# VERIFICATION.txt
+VERIFICATION
+...
+-[CHECKSUM HASHES]-
+___________________
+0.07KB | FC6FC10FA3099F8D1346565B4AD57A4A57FAB2933C676E0B32CD4C7853B5C341 | ./module.psm1
+3.16KB | 7C3178BEC3EED88F93C86F8F3ECF4356BAA3EB7559965C2BE8C20D885C057519 | ./module.psd1
 ```
 
-| Parameter                                   | Description                                                                                                                                                                          |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **`-Automator`**                            | Builds using the `phellams-automator` Docker image. If not specified, the script will use the local PowerShell installation. All dependencies must be installed locally (see below). |
-| **`-build_dotnet_lib`**                     | Calls `build-dotnet-library.ps1`, which runs `dotnet build` and `dotnet pack` to build and package .NET libraries (`.nupkg`). *(WIP – functional but requires refinement.)*          |
-| **`-PhWriter`**                             | Generates the `phwriter-metadata.ps1` file using the `phwriter` module.                                                                                                              |
-| **`-Pester`**                               | Calls `test-pester-before-build.ps1`, which runs `Invoke-Pester` from the `Pester` module.                                                                                           |
-| **`-Sa`**                                   | Calls `test-sa-before-build.ps1`, which runs `Invoke-ScriptAnalyzer` from the `PSScriptAnalyzer` module.                                                                             |
-| **`-Build`**                                | Calls `build-module.ps1` from the `psmpacker` module. Copies the built module to the `dist` folder and generates the `VERIFICATION.txt` file.                                        |
-| **`-Nuget`**                                | Calls `build-package-generic-nuget.ps1`, which runs `New-NuspecPackageFile` and `New-NupkgPackage` from the `nupsforge` module.                                                      |
-| **`-PsGal`**                                | Calls `build-package-psgallery.ps1`, which runs `New-NuspecPackageFile` from the `nupsforge` module for PowerShell Gallery publishing.                                               |
-| **`-ChocoNuSpec`**                          | Calls `build-nuspec-choco.ps1`, which runs `New-ChocoNuspecFile` from the `nupsforge` module.                                                                                        |
-| **`-ChocoPackage`** *(Docker only)*         | Calls `build-package-choco.sh` (Linux only). Runs `choco pack` and `choco push` using the `choco/choco:latest` Docker image.                                                         |
-| **`-ChocoPackageWindows`** *(Windows only)* | Calls `build-package-choco-windows.ps1`, which runs `New-ChocoNuspecFile` and `New-ChocoPackage` from the `nupsforge` module. **Requires Chocolatey to be installed.**               |
+Parser requirements:
 
----
+| Field | Requirement |
+| --- | --- |
+| Size | Non-empty legacy display value |
+| Hash | Exactly 64 hexadecimal characters |
+| Path | Non-empty normalized relative path |
+| Fields | Exactly three fields separated by `|` |
+| Duplicate normalized path | Rejected |
+| Rooted or traversal path | Rejected |
 
-### Depenedencies Modules(linux/Winx64)
+The legacy size field is display metadata and is not an exact byte count. A versioned, lossless manifest format is tracked in [devtracker-pending.md](./devtracker-pending.md).
 
-  - [colorconsole](https://gitlab.com/phellams/colorconsole)
-  - [tadpol](https://gitlab.com/phellams/tadpol)
-  - [GetAutoVersion](https://gitlab.com/phellams/phellams-utils/semver/Get-GitAutoVersion)
-  - [quicklog](https://gitlab.com/phellams/quicklog)
-  - [shelldock](https://gitlab.com/phellams/shelldock)
-  - [psmpacker](https://gitlab.com/phellams/psmpacker)
-  - [nupsforge](https://gitlab.com/phellams/nupsforge)
-  - [csverify](https://gitlab.com/phellams/csverify)
+## File Selection
 
-### Dependecies Binaries(linux/Winx64)
-  - [git](https://git-scm.com/)
-  - [choco](https://chocolatey.org/)
-  - [nuget](https://www.nuget.org/downloads) v6.x
+### Conceptual
 
----
+`New-CheckSum` recursively enumerates regular files, converts paths to a normalized `/` representation, and sorts them using ordinal comparison before hashing.
 
-## **Building Using Automator**
+### Strict Reference
 
-Build the module locally using the **phellams-automator** Docker image.
+| Rule | Behavior |
+| --- | --- |
+| Hidden files | Included unless matched by another exclusion |
+| `.git` directory segments | Excluded |
+| File named `VERIFICATION.txt` | Excluded, case-insensitive |
+| `.nuspec` files | Excluded, case-insensitive |
+| Output ordering | Ordinal normalized relative path |
+| Hash casing | Uppercase hexadecimal |
+| Manifest path prefix | `./` |
 
-> **Note:** Chocolatey build and publish requires the choco Docker image to be built and published.
+## Result Objects
+
+### Checksum Record
+
+`Read-CheckSum` assigns the type name `CsVerify.ChecksumRecord` and returns these properties:
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `Size` | `System.String` | Legacy human-readable size value. |
+| `Hash` | `System.String` | Validated uppercase SHA-256 digest. |
+| `Path` | `System.String` | Normalized relative path prefixed with `./`. |
+
+### Verification Result
+
+Successful verification returns records with the type name `CsVerify.VerificationResult`:
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `Status` | `System.String` | `Verified`, `HashMismatch`, `Unexpected`, or `Missing`. |
+| `Path` | `System.String` | Normalized relative path. |
+| `Algorithm` | `System.String` | Currently `SHA256`. |
+| `ExpectedHash` | `System.String` or null | Digest from the manifest. |
+| `ActualHash` | `System.String` or null | Digest calculated from the current file. |
+| `ExpectedSize` | `System.String` or null | Legacy manifest size value. |
+| `ActualSize` | `System.String` or null | Current legacy size value. |
+
+## Module Architecture
+
+### Conceptual
+
+The root module is an explicit loader. Shared PowerShell helpers are private; compiled dependencies have a separate reserved location.
+
+### Strict Reference
+
+```text
+csverify/
+|-- csverify.psd1
+|-- csverify.psm1
+|-- Public/
+|   |-- New-CheckSum.ps1
+|   |-- New-VerificationFile.ps1
+|   |-- Read-CheckSum.ps1
+|   `-- Test-Verification.ps1
+|-- Private/
+|   |-- ConvertTo-CsRelativePath.ps1
+|   `-- Helpers/
+|       |-- ConvertTo-CsDisplaySize.ps1
+|       |-- Format-CsMessage.ps1
+|       `-- New-AsciiColor.ps1
+|-- Lib/
+|   `-- reserved for compiled C# assemblies and DLLs
+`-- test/
+    `-- test-unit-pester.ps1
+```
+
+The loader imports `Private` files before `Public` files and exports only the four functions declared in both the loader and module manifest. Private helpers and legacy aliases such as `csole` are not exported.
+
+## Build and Test
+
+### Local Validation
 
 ```powershell
-pwsh -c ./automator-devops/localbuilder.ps1 -Automator -Build -Nuget -ChocoNuSpec -ChocoPackage -PsGal -Cleanup
+# PowerShell 7, repository root
+Invoke-Pester ./test/test-unit-pester.ps1 -Output Detailed
 ```
 
----
-
-## **Building Using PowerShell 7.x**
-
-> **Note (Windows):** Chocolatey can be installed easily via [https://chocolatey.org/install](https://chocolatey.org/install).
-> **Note (Non-Windows):** Chocolatey build and publish requires the choco Docker image if not running on Windows.
+Run static analysis against owned source:
 
 ```powershell
-pwsh -c ./automator-devops/localbuilder.ps1 -Build -Nuget -ChocoNuSpec -ChocoPackage -PsGal -Cleanup
+# PowerShell 7, repository root
+$SOURCE_PATHS = @('./csverify.psm1') + @(
+    Get-ChildItem ./Public, ./Private -Recurse -File -Filter '*.ps1' |
+        Select-Object -ExpandProperty FullName
+)
+
+foreach ($SOURCE_PATH in $SOURCE_PATHS) {
+    Invoke-ScriptAnalyzer -Path $SOURCE_PATH -Severity Warning, Error
+}
 ```
 
-## **CMDLET Reference**
-
-List of available cmdlets provided by the module.
-
-#### ***New-CheckSum***
-
-New-CheckSum generates and returns sha256 hash for each within the specified folder. New-Verification unitilizes `New-Checksum` & `Read-CheckSum`.
-
-*Syntax*:
-
-<pre>
-New-CheckSum -Path (String) [-FromString (string)] [(CommonParameters)]
-</pre>
-
-*Parameters*:
-
-| Name | Type | Description | Required |
-| --- | --- | --- | --- |
-| **Path** | *String* | The path to generate the checksum file for | Yes |
-| **FromString** | *String* | The string to generate the checksum file for | No |
+### Automator Build
 
 ```powershell
-New-CheckSum -Path ./
+# PowerShell 7, repository root; Docker required for -Automator
+./automator-devops/localbuilder.ps1 -Automator -Pester -Build
 ```
 
-*Example*:
+Build and release behavior is configured in [`build_config.json`](./build_config.json). The current local suite contains 15 tests, reports 90.73% coverage for owned module source, and produces no PSScriptAnalyzer warnings or errors.
 
-#### ***Read-CheckSum***
-Read-CheckSum reads the verification file and returns a `PSCustomObject` *array* containg the file, path, size and hash.
+## Development Status
 
-*Syntax*:
+Current and historical changes are recorded in [CHANGELOG.md](./CHANGELOG.md). Pending checksum formats, remote release verification, Chocolatey rendering, signature validation, and provenance work are defined as epics and tasks in [devtracker-pending.md](./devtracker-pending.md).
 
-<pre>
-Read-CheckSum -Path (String) [(CommonParameters)]
-</pre>
-
-*Parameters*:
-
-| Name | Type | Description | Required |
-| --- | --- | --- | --- |
-| **Path** | *String* | The path to generate the checksum file for | Yes |
-
-*Example*:
+The repository version is derived with:
 
 ```powershell
-Read-CheckSum -RootPath ./
+# PowerShell 7, repository root
+. ../phellams-utils/helpers/semver/Get-ConventionalCommitVersion.ps1
+Get-ConventionalCommitVersion | Format-List Version, LastTag, CommitsScanned, BumpType
 ```
 
-#### ***New-VerificationFile***
+The current unreleased verification fix selects a patch release from the latest tag:
 
-New-VerificationFile generates the verification file. recersivlly compiles a list of all files present. For each file, i  t computes the SHA256 hash and records the **file**, **path**, **size** and its **hash** in the verification file(**VERIFICATION.txt**).
-
-*Syntax*:
-
-<pre>
-New-VerificationFile -RootPath (String) -OutPutPath (String) [(CommonParameters)]
-</pre>
-
-*Parameters*:
-
-| Name | Type | Description | Required |
-| --- | --- | --- | --- |
-| **RootPath** | *String* | The path to the folder to generat | Yes |
-| **OutputPath** | *String* | The output path to generate the verification file to | Yes |
-
-*Example*:
-
-```powershell
-New-VerificationFile ./ ./dist/choco
+```text
+Version        : 0.3.9
+LastTag        : v0.3.8
+BumpType       : patch
 ```
 
-#### ***Test-Verification***
+`CommitsScanned` is intentionally omitted because it changes whenever another documentation or maintenance commit is added before release.
 
-Test-Verification is used to verify the integrity of the codebase base it compares the `SHA256` values from **VERIFICATION.txt** file and Returns file report.
+## Contributing
 
-*Syntax*:
+1. Branch from `develop`.
+2. Make one scoped change per conventional commit.
+3. Add or update Pester coverage.
+4. Run tests, coverage, and PSScriptAnalyzer locally.
+5. Open a merge request targeting `develop`.
 
-<pre>
-Test-Verification -Path (String) [(CommonParameters)]
-</pre>
+Use Conventional Commit subjects such as:
 
-*Parameters*:
-
-| Name | Type | Description | Required |
-| --- | --- | --- | --- |
-| **Path** | *String* | The path to the verification file | Yes |
-
-*Example*:
-
-```powershell 
-Test-Verification
+```text
+fix(verification): compare duplicate hashes by path
+feat(manifest): add GNU checksum parser
+docs(readme): document trust model
 ```
 
+## License
 
-## **Contributing**
+csverify is distributed under the [MIT License](./LICENSE).
 
-Feel free to contribute! Fork the repo and submit a **merge request** with your improvements. Or, open an **issue** with the `enhancement` tag to discuss ideas.
+## API Reference
 
-1. Fork the Project and clone it: `git clone https://gitlab.com/YOUR_USERNAME/pwsl.git`
-2. Switch to dev and create your branch: `git checkout develop; git checkout -b feature/AmazingFeature`
-3. Commit your changes: `git commit -m 'Add some AmazingFeature'`
-4. Push to the branch: `git push origin feature/AmazingFeature`
-5. Open a Merge Request:
-   
-   [<img src="https://img.shields.io/badge/Open_Merge_Request-gitlab-orange?style=for-the-badge&logo=gitlab">](https://gitlab.com/phellams/csverify/-/merge_requests/new)
+### `New-CheckSum`
 
----
+| Member | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `Path` | `System.String` | Yes | None | Existing root directory to enumerate recursively. Accepts `FullName` as an alias and pipeline binding by property name. |
+| Output | `System.String` | Output | None | Complete legacy verification manifest. |
+| Hash algorithm | Fixed | N/A | SHA-256 | Algorithm used for every selected file. |
+| Common parameters | PowerShell | No | Standard | Includes `-Verbose`, `-ErrorAction`, and related common parameters. |
 
+### `Read-CheckSum`
 
-## **License**
+| Member | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `File` | `System.String` | Yes in `File` set | Default parameter set | Existing legacy manifest file. |
+| `FromString` | `System.String` | Yes in `String` set | None | Complete manifest content supplied in memory. |
+| Output | `CsVerify.ChecksumRecord` | Output | None | Raw validated checksum records. |
+| Hash validation | Fixed | N/A | 64 hexadecimal characters | Rejects malformed SHA-256 values. |
 
-This project is licensed under the MIT Licence, see the [LICENSE](LICENSE) file for details
+### `New-VerificationFile`
 
-<!--LINKS AND BADGES-->
-[psgallary-badge]: https://img.shields.io/powershellgallery/v/csverify?include_prereleases&style=for-the-badge&logo=powershell
-[psgallary-link]: https://www.powershellgallery.com/packages/csverify
-[choco-badge]: https://img.shields.io/chocolatey/v/csverify?style=for-the-badge&logo=chocolatey
-[choco-link]: https://chocolatey.org/packages/csverify
-[build-status]: https://img.shields.io/gitlab/pipeline-status/csverify?style=for-the-badge&logo=Gitlab&logoColor=%233478BD&labelColor=%232D2D34
-[build-url]: https://gitlab.com/phellams/csverify/-/pipelines
-[gitlab-badge]: https://img.shields.io/badge/gitlab-4B0082?style=for-the-badge&logo=gitlab&logoColor=orange
-[github-badge]: https://img.shields.io/badge/github-383838?style=for-the-badge&logo=github&logoColor=white
-[license-badge]: https://img.shields.io/badge/License-MIT-Blue?style=for-the-badge&labelColor=%232D2D34&color=%**2317202a**
+| Member | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `RootPath` | `System.String` | Yes | None | Existing root directory whose files are hashed. |
+| `OutputPath` | `System.String` | Yes | None | Existing directory that receives `VERIFICATION.txt`. |
+| Output | `CsVerify.ChecksumRecord` | Output | None | Records parsed from the file after it is written. |
+| `-WhatIf` | Switch | No | False | Shows whether the destination would be created or replaced. |
+| `-Confirm` | Switch | No | Host policy | Requests confirmation through PowerShell `ShouldProcess`. |
+
+### `Test-Verification`
+
+| Member | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `Path` | `System.String` | Yes | None | Existing package root containing `tools/VERIFICATION.txt`. |
+| Output | `CsVerify.VerificationResult` | Output on success | None | Path-bound verification records. |
+| Failure behavior | Terminating error | N/A | Enabled | Throws when any record is `HashMismatch`, `Missing`, or `Unexpected`. |
+| Path comparison | Platform-aware | N/A | Windows insensitive; Linux/macOS ordinal | Dictionary comparer used for normalized record identity. |

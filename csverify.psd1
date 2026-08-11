@@ -1,13 +1,13 @@
 @{
 
     RootModule             = "csverify.psm1"
-    ModuleVersion          = '0.3.8'
+    ModuleVersion          = '0.3.9'
     CompatiblePSEditions   = @()
     GUID                   = '8089eced-de22-4dae-a7f6-8646d9c69d14'
     Author                 = 'Garvey k. Snow'
     CompanyName            = 'phellams'
-    Copyright              = '2023 Garvey k. Snow. All rights reserved.'
-    Description            = 'Powershell Module Designed to assist in ensuring the integrity of a codebase by generating and verifying a VERIFICATION.txt file, created for poweshell packages distributed via chocolatey, can be used to verify the integrity of any codebase.'
+    Copyright              = '2024 Garvey k. Snow. All rights reserved.'
+    Description            = 'Generates and validates path-bound SHA-256 verification manifests for PowerShell packages and directory trees.'
     PowerShellVersion      = '7.0'
     PowerShellHostName     = ''
     PowerShellHostVersion  = ''
@@ -35,26 +35,25 @@
     PrivateData            = @{
         PSData = @{
             Tags                       = @('automation', 'checksum', 'hash', 'module', 'powershell', 'powershellcore', 'tool', 'utility', 'utility-module')
-            LicenseUri                 = 'https://choosealicense.com/licenses/mit'
+            LicenseUri                 = 'https://gitlab.com/phellams/csverify/-/blob/develop/LICENSE'
             ProjectUri                 = 'https://gitlab.com/phellams/csverify'
             IconUri                    = 'https://raw.githubusercontent.com/phellams/phellams-general-resources/main/logos/csverify/dist/png/csverify-128x128.png'
-            ReleaseNotes               = 'https://gitlab.com/phellams/csverify/-/blob/main/Releases'
+            ReleaseNotes               = 'https://gitlab.com/phellams/csverify/-/blob/develop/CHANGELOG.md'
             # CHOCOLATE ---------------------
-            ChocoDescription = 'Powershell Module Designed to assist in ensuring the integrity of a codebase by generating and verifying a VERIFICATION.txt file, created for poweshell packages distributed via chocolatey, can be used to verify the integrity of any codebase.'
-            ChocoTitle       = 'csverify - Powershell Checksum Verification Module.'
-            LicenseUrl       = 'https://choosealicense.com/licenses/mit'
+            ChocoDescription = 'A PowerShell module for generating and validating path-bound SHA-256 verification manifests.'
+            ChocoTitle       = 'csverify - PowerShell Checksum Verification Module'
+            LicenseUrl       = 'https://gitlab.com/phellams/csverify/-/blob/develop/LICENSE'
             ProjectUrl       = 'https://gitlab.com/phellams/csverify'
             IconUrl          = 'https://raw.githubusercontent.com/phellams/phellams-general-resources/main/logos/csverify/dist/png/csverify-128x128.png'
             Docsurl          = 'https://gitlab.com/phellams/csverify/-/blob/main/README.md'
             MailingListUrl   = 'https://gitlab.com/phellams/csverify/-/blob/main/README.md'
             projectSourceUrl = 'https://gitlab.com/phellams/csverify'
             bugTrackerUrl    = 'https://gitlab.com/phellams/csverify/issues'
-            Summary          = 'csverify - Powershell Checksum Verification Module.'
+            Summary          = 'Generates and validates path-bound SHA-256 verification manifests.'
             # CHOCOLATE ---------------------
             # Prerelease               = 'prerelease'
         }
     }
-    HelpInfoURI            = 'https://gitlab.com/sgkens/commitfusion/blob/main/README.md'
+    HelpInfoURI            = 'https://gitlab.com/phellams/csverify/-/blob/develop/README.md'
     DefaultCommandPrefix   = ''
 }
-
